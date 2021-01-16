@@ -4,16 +4,8 @@ import numpy as np
 import time
 from sklearn.preprocessing import StandardScaler
 import plotly.graph_objects as go
-
-st.title("CycIF Sample Reader")
-
-bx1_file = "HTAN2_HMS_0000330944_bx1_OCT_tumor_cycif.csv"
-
-fp = st.sidebar.file_uploader("Please select your CycIF data set")
-
-
-def load_data():
-    return pd.read_csv(bx1_file)
+from services import file_loader
+import scanpy as sc
 
 
 def violin_plot_cols(df):
@@ -27,38 +19,21 @@ def violin_plot_cols(df):
     st.plotly_chart(fig)
 
 
-raw_df = load_data()
+st.title("CycIF Sample Reader")
 
-raw_df['bx'] = 1
-raw_df['scaled'] = 'N'
+uploaded_file = st.sidebar.file_uploader("Please select your CycIF data set")
 
-if st.checkbox('Show raw data'):
-    st.subheader('Raw data')
-    st.dataframe(raw_df)
+aand_file = None
+if uploaded_file is not None:
+    aand_file = sc.read_h5ad(uploaded_file)
 
-# Scale markers for each dataset independently. Scale approach:
-# 1. log10 transformation
-# 2. standard scaling
-# 3. clip to maximum range
-scaler = StandardScaler()
-scale_func = lambda d: scaler.fit_transform(d).clip(min=-10, max=10)
+if aand_file is not None:
 
-marker_cols = raw_df.filter(regex="Cell Masks$").filter(regex="^(?!(Goat|DAPI))").columns
-raw_df_scaled = raw_df.copy()
-raw_df_scaled[marker_cols] = scale_func(raw_df[marker_cols])
-raw_df_scaled['scaled'] = 'Y'
+    df = aand_file.to_df()
 
-# Combine unscaled and scaled data to create complete dataset.
-cycif_df = pd.concat([raw_df, raw_df_scaled])
-cycif_df.reset_index(inplace=True)
+    st.subheader("Raw data set")
 
-if st.checkbox('Show combined dataset'):
-    st.write(cycif_df)
+    if aand_file is not None:
+        st.write(df)
 
-option = st.selectbox(
-    'Scaled',
-    ['Y', 'N'])
-
-st.write(option)
-
-violin_plot_cols(cycif_df[cycif_df.scaled == option][marker_cols])
+    violin_plot_cols(df)
