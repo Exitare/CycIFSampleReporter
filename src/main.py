@@ -21,12 +21,23 @@ def violin_plot_cols(df):
 
 st.title("CycIF Sample Reader")
 
+# File uploader in a sidebar
 uploaded_file = st.sidebar.file_uploader("Please select your CycIF data set")
 
 aand_file = None
-# Load the file
+# Load the file or display explanation
 if uploaded_file is not None:
     aand_file = sc.read_h5ad(uploaded_file)
+else:
+    st.subheader('FAQ')
+    st.write("Supported file types:")
+    st.write("- h5ad")
+
+    st.subheader('How to')
+    st.write('- Select a h5ad file using the file uploader.')
+    st.write('- After you selected a file the data will be loaded automatically '
+             'and you will be able to explore your data interactively.')
+
 
 # Only if a file is loaded show all the interactive data
 if aand_file is not None:
