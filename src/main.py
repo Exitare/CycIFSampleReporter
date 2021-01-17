@@ -8,13 +8,17 @@ from services import file_loader
 import scanpy as sc
 
 
-def violin_plot_cols(df):
+def violin_plot_cols(df, selected_columns):
     """ Violin plot for all columns in a data frame. """
     fig = go.Figure()
-
-    for col in df.columns:
-        fig.add_trace(go.Violin(y=df[col],
-                                name=col))
+    if len(selected_columns) == 0:
+        for col in df.columns:
+            fig.add_trace(go.Violin(y=df[col],
+                                    name=col))
+    else:
+        for col in selected_columns:
+            fig.add_trace(go.Violin(y=df[col],
+                                    name=col))
 
     st.plotly_chart(fig)
 
@@ -38,7 +42,6 @@ else:
     st.write('- After you selected a file the data will be loaded automatically '
              'and you will be able to explore your data interactively.')
 
-
 # Only if a file is loaded show all the interactive data
 if aand_file is not None:
 
@@ -48,4 +51,7 @@ if aand_file is not None:
     if st.checkbox('Show raw data set'):
         st.write(df)
 
-    violin_plot_cols(df)
+    selected_columns = st.multiselect('Select columns you want to display:',
+                                      df.columns)
+
+    violin_plot_cols(df, selected_columns)
