@@ -37,6 +37,7 @@ jupyterlab-pygments==0.1.2
 jupyterlab-widgets==1.0.0
 kiwisolver==1.3.1
 legacy-api-wrap==1.2
+leidenalg==0.8.3
 llvmlite==0.35.0
 MarkupSafe==1.1.1
 matplotlib==3.3.3
@@ -57,12 +58,14 @@ pandocfilters==1.4.3
 parso==0.8.1
 patsy==0.5.1
 pexpect==4.8.0
+PhenoGraph==1.5.7
 pickleshare==0.7.5
 Pillow==8.1.0
 plotly==4.14.3
 prometheus-client==0.9.0
 prompt-toolkit==3.0.10
 protobuf==3.14.0
+psutil==5.8.0
 ptyprocess==0.7.0
 pyarrow==2.0.0
 pycparser==2.20
@@ -71,6 +74,7 @@ Pygments==2.7.4
 pyparsing==2.4.7
 pyrsistent==0.17.3
 python-dateutil==2.8.1
+python-igraph==0.8.3
 pytz==2020.5
 pyzmq==21.0.1
 requests==2.25.1
@@ -90,6 +94,7 @@ streamlit==0.74.1
 tables==3.6.1
 terminado==0.9.2
 testpath==0.4.4
+texttable==1.6.3
 threadpoolctl==2.1.0
 toml==0.10.2
 toolz==0.11.1
