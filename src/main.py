@@ -1,18 +1,21 @@
 import streamlit as st
 import pandas as pd
 import phenograph
-from services import plots, file_loader
+from services import plots
 import seaborn
 import plotly.express as px
+import numpy as np
+import scanpy as sc
 
-
-def clustering():
-    communities, graph, Q = phenograph.cluster(aand_file.X, k=aand_file.uns['PhenoGraph_k'])
+@st.cache(allow_output_mutation=True, persist=True)
+def clustering(data):
+    communities, graph, Q = phenograph.cluster(data.X, k=data.uns['PhenoGraph_k'])
     return communities, graph, Q
 
 
-def preprocess_data(df):
-    pass
+
+def load_file(uploaded_file):
+    return sc.read_h5ad(uploaded_file)
 
 
 st.title("CycIF Sample Reader")
@@ -34,10 +37,10 @@ if uploaded_file is None:
 
 
 else:
-    aand_file = file_loader.load_file(uploaded_file)
+    aand_file = load_file(uploaded_file)
     df = aand_file.to_df()
 
-    communities, graph, Q = clustering()
+    communities, graph, Q = clustering(aand_file)
 
     pg_clusters = pd.Series(communities)
     means = []
@@ -45,7 +48,6 @@ else:
         cells_index = pg_clusters[pg_clusters == i].index
         filtered_markers_df = df[df.index.isin(cells_index)]
         means.append(filtered_markers_df.mean().values)
-
 
     st.write(means)
     means_df = pd.DataFrame(means, columns=df.columns)
