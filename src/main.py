@@ -51,9 +51,10 @@ else:
 
     threshold = st.slider('Please select the threshold:', math.floor(high_low_marker_df["Low"].min()),
                           math.ceil(high_low_marker_df["High"].max()), 0)
-    community_selector = st.slider('Please select the community you want to take a closer look:',
-                                   math.floor(high_low_marker_df["Community"].min()),
-                                   math.ceil(high_low_marker_df["Community"].max()), -1)
+    community_selector = st.slider(
+        'Please select the community you want to take a closer look: (-1 selects all communities)',
+        math.floor(high_low_marker_df["Community"].min()),
+        math.ceil(high_low_marker_df["Community"].max()), -1)
     # TODO: Add function for that
     if threshold == 0 and community_selector == -1:
         st.dataframe(high_low_marker_df)
