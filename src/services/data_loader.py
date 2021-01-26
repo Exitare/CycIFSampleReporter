@@ -28,3 +28,23 @@ def create_means_df(communities, pg_clusters, df):
         means.append(filtered_markers_df.mean().values)
 
     return pd.DataFrame(means, columns=df.columns)
+
+
+@st.cache
+def create_high_low_marker_df(means_df):
+    high_low_marker_df = pd.DataFrame(columns=["Community", "Cell Name (High)", "High", "Cell Name (Low)", "Low"])
+    for i, community in means_df.iterrows():
+        highest = community.sort_values(ascending=False).head(3)
+        lowest = community.sort_values(ascending=False).tail(3)
+
+        for j in range(0, 3):
+            high_low_marker_df = high_low_marker_df.append({
+                "Community": i,
+                "Cell Name (High)": highest.index[j],
+                "High": highest[j],
+                "Cell Name (Low)": lowest.index[j],
+                "Low": lowest[j],
+
+            }, ignore_index=True)
+
+    return high_low_marker_df

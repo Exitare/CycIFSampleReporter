@@ -48,36 +48,33 @@ else:
 
     # fig = plots.create_clustermap(means_df)
     # fig.show()
-    high_low_marker_df = pd.DataFrame(columns=["Index", "Cell Name (High)", "High", "Cell Name (Low)", "Low"])
-    for i, community in means_df.iterrows():
-        highest = community.sort_values(ascending=False).head(3)
-        lowest = community.sort_values(ascending=False).tail(3)
 
-        for j in range(0, 3):
-            high_low_marker_df = high_low_marker_df.append({
-                "Index": i,
-                "Cell Name (High)": highest.index[j],
-                "High": highest[j],
-                "Cell Name (Low)": lowest.index[j],
-                "Low": lowest[j],
+    high_low_marker_df = data_loader.create_high_low_marker_df(means_df)
 
-            }, ignore_index=True)
+    st.subheader("Mean markers per community")
+    st.text("This section provides possibilites to discover the highest and \nlowest mean marker values for each phenograph community")
 
-            # st.write(high_low_marker_df)
-
-    threshold = st.slider('Please select your threshold:', math.floor(high_low_marker_df["Low"].min()),
+    threshold = st.slider('Please select the threshold:', math.floor(high_low_marker_df["Low"].min()),
                           math.ceil(high_low_marker_df["High"].max()), 0)
-    st.write(threshold)
-    if threshold == 0:
-        st.dataframe(high_low_marker_df)
-    else:
-        low_df = high_low_marker_df[high_low_marker_df["Low"] > threshold]
-        high_df = high_low_marker_df[high_low_marker_df["High"].astype('float') > threshold]
-        st.write(high_df)
-        st.write(low_df)
-        temp_df = pd.concat(high_df, low_df,  join="inner")
-        st.dataframe(temp_df)
+    community_selector = st.slider('Please select the community you want to take a closer look:',
+                                   math.floor(high_low_marker_df["Community"].min()),
+                                   math.ceil(high_low_marker_df["Community"].max()), -1)
 
-    # st.write(i, "***")
-    # st.write(community.sort_values(ascending=False).head(3))
-    # st.write(community.sort_values(ascending=False).tail(3))
+    if threshold == 0 and community_selector == -1:
+        st.dataframe(high_low_marker_df)
+    elif threshold != 0 and community_selector == -1:
+        low_df = high_low_marker_df[
+            high_low_marker_df["Low"] > threshold]
+        high_df = high_low_marker_df[high_low_marker_df["High"].astype('float') > threshold]
+        temp_df = pd.concat([low_df, high_df]).drop_duplicates().reset_index(drop=True)
+        st.dataframe(temp_df)
+    elif threshold == 0 and community_selector != -1:
+        temp_df = high_low_marker_df[high_low_marker_df["Community"] == community_selector]
+        st.dataframe(temp_df)
+    else:
+        low_df = high_low_marker_df[
+            (high_low_marker_df["Low"] > threshold) & (high_low_marker_df["Community"] == community_selector)]
+        high_df = high_low_marker_df[(high_low_marker_df["High"].astype('float') > threshold) & (high_low_marker_df[
+                                                                                                     "Community"] == community_selector)]
+        temp_df = pd.concat([low_df, high_df]).drop_duplicates().reset_index(drop=True)
+        st.dataframe(temp_df)
