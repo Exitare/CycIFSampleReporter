@@ -40,26 +40,21 @@ else:
 
     selected_columns = st.multiselect('Select columns you want to display:',
                                       df.columns)
-
+    st.subheader("Explore cells")
     st.plotly_chart(plots.create_violin_plot(df, selected_columns))
-    # fig = plots.create_clustermap(means_df)
-    # st.plotly_chart(fig)
-    # st.plotly_chart(px.imshow(means_df, x=df.columns))
-
-    # fig = plots.create_clustermap(means_df)
-    # fig.show()
 
     high_low_marker_df = data_loader.create_high_low_marker_df(means_df)
 
     st.subheader("Mean markers per community")
-    st.text("This section provides possibilites to discover the highest and \nlowest mean marker values for each phenograph community")
+    st.text(
+        "This section provides possibilites to discover the highest and \nlowest mean marker values for each phenograph community")
 
     threshold = st.slider('Please select the threshold:', math.floor(high_low_marker_df["Low"].min()),
                           math.ceil(high_low_marker_df["High"].max()), 0)
     community_selector = st.slider('Please select the community you want to take a closer look:',
                                    math.floor(high_low_marker_df["Community"].min()),
                                    math.ceil(high_low_marker_df["Community"].max()), -1)
-
+    # TODO: Add function for that
     if threshold == 0 and community_selector == -1:
         st.dataframe(high_low_marker_df)
     elif threshold != 0 and community_selector == -1:
@@ -78,3 +73,7 @@ else:
                                                                                                      "Community"] == community_selector)]
         temp_df = pd.concat([low_df, high_df]).drop_duplicates().reset_index(drop=True)
         st.dataframe(temp_df)
+
+    st.text("Clustered heatmap of phenograph communities.")
+    fig = px.imshow(means_df, x=df.columns)
+    st.plotly_chart(fig)
