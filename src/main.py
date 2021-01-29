@@ -41,6 +41,8 @@ else:
     st.subheader('General information')
     st.write(f'The dataset contains {communities.nunique()} communities'
              f' and {df.columns.nunique()} cells with {len(df.index)} rows.')
+    st.write("Proportions of clusters:")
+    st.bar_chart(communities.value_counts())
 
     # Cell exploration
     st.subheader("Explore cells")
