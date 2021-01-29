@@ -38,9 +38,16 @@ else:
     if st.checkbox('Show raw data set'):
         st.write(df)
 
+    st.subheader('General information')
+    st.write(f'The dataset contains {communities.nunique()} communities'
+             f' and {df.columns.nunique()} cells with {len(df.index)} rows.')
+
+    # Cell exploration
+    st.subheader("Explore cells")
+    st.write('Select cells to have a closer look at their distribution and to compare them with others.')
+
     selected_columns = st.multiselect('Select columns you want to display:',
                                       df.columns)
-    st.subheader("Explore cells")
     st.plotly_chart(plots.create_violin_plot(df, selected_columns))
 
     high_low_marker_df = data_loader.create_high_low_marker_df(means_df)
@@ -75,6 +82,7 @@ else:
         temp_df = pd.concat([low_df, high_df]).drop_duplicates().reset_index(drop=True)
         st.dataframe(temp_df)
 
-    st.text("Clustered heatmap of phenograph communities.")
+    st.subheader("Clustered heatmap of phenograph communities.")
+
     fig = px.imshow(means_df, x=df.columns)
     st.plotly_chart(fig)
