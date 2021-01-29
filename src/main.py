@@ -7,6 +7,7 @@ import plotly.express as px
 import numpy as np
 import scanpy as sc
 import math
+import matplotlib.pyplot as plt
 
 st.title("CycIF Sample Reader")
 
@@ -42,7 +43,12 @@ else:
     st.write(f'The dataset contains {communities.nunique()} communities'
              f' and {df.columns.nunique()} cells with {len(df.index)} rows.')
     st.write("Proportions of clusters:")
-    st.bar_chart(communities.value_counts())
+
+    col1, col2 = st.beta_columns(2)
+    col1.header("Bar Chart")
+    col1.bar_chart(communities.value_counts())
+    col2.header("Area chart:")
+    col2.area_chart(communities.value_counts())
 
     # Cell exploration
     st.subheader("Explore cells")
