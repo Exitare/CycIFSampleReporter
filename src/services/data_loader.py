@@ -20,6 +20,16 @@ def extract_data(aand_file):
 
 
 @st.cache
+def group_biopsy_data(biopsy_data):
+    """
+    Returns the pre and post treatment indices for each biopsy
+    """
+    pre_treatment = biopsy_data[biopsy_data['biopsy'] == 1]
+    post_treatment = biopsy_data[biopsy_data['biopsy'] == 2]
+    return pre_treatment, post_treatment
+
+
+@st.cache
 def create_means_df(communities, pg_clusters, df):
     means = []
     for i in range(0, pd.Series(communities).max() + 1):
