@@ -8,6 +8,7 @@ import numpy as np
 import scanpy as sc
 import math
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.title("CycIF Sample Reader")
 
@@ -46,12 +47,30 @@ else:
 
     st.subheader("Biopsy Comparison")
     pre_index, post_index = data_loader.group_biopsy_data(biopsy_data)
+    data = data_loader.add_pre_column(df, pre_index, post_index)
 
-    pre = df.iloc[pre_index.index]
-    post = df.iloc[post_index.index]
+    # expression_threshold = st.slider('Please select the threshold:', data.min(), data.max(), 0)
 
-    
+    st.write(data)
+    means = data.groupby('pre').mean().T
+    means.reset_index(level=0, inplace=True)
+    means.rename(columns={"index": "marker"}, inplace=True)
+    st.write(means)
 
+    melt = pd.melt(means, id_vars=['marker'], value_vars=['Y', 'N'])
+    st.write(melt)
+
+    g = sns.catplot(
+        data=melt, kind="bar",
+        x="marker", y="value", hue="pre",
+        ci="sd", palette="dark", alpha=.6, height=6
+    )
+    g.despine(left=True)
+    g.set_axis_labels("", "Body mass (g)")
+    g.legend.set_title("")
+
+
+    st.pyplot(g)
 
     st.subheader("Charts")
     col1, col2 = st.beta_columns(2)

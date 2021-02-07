@@ -30,6 +30,14 @@ def group_biopsy_data(biopsy_data):
 
 
 @st.cache
+def add_pre_column(df, pre_index, post_index):
+    data = df.copy()
+    data.at[pre_index.index, 'pre'] = 'Y'
+    data.at[post_index.index, 'pre'] = 'N'
+    return data
+
+
+@st.cache
 def create_means_df(communities, pg_clusters, df):
     means = []
     for i in range(0, pd.Series(communities).max() + 1):
