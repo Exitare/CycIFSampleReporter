@@ -32,8 +32,8 @@ def group_biopsy_data(biopsy_data):
 @st.cache
 def add_pre_column(df, pre_index, post_index):
     data = df.copy()
-    data.at[pre_index.index, 'pre'] = 'Y'
-    data.at[post_index.index, 'pre'] = 'N'
+    data.at[pre_index.index, 'stage'] = 'Pre'
+    data.at[post_index.index, 'stage'] = 'Post'
     return data
 
 
@@ -66,3 +66,11 @@ def create_high_low_marker_df(means_df):
             }, ignore_index=True)
 
     return high_low_marker_df
+
+
+@st.cache
+def melt_data_for_pre_post_bar(data):
+    means = data.groupby('stage').mean().T
+    means.reset_index(level=0, inplace=True)
+    means.rename(columns={"index": "marker"}, inplace=True)
+    return pd.melt(means, id_vars=['marker'], value_vars=['Pre', 'Post'])
