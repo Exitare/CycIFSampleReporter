@@ -66,8 +66,9 @@ else:
         ci="sd", palette="dark", alpha=.6, height=6
     )
     g.despine(left=True)
-    g.set_axis_labels("", "Body mass (g)")
+    g.set_axis_labels("", "Expression (Mean)")
     g.legend.set_title("")
+    g.set_xticklabels(rotation=90)
 
 
     st.pyplot(g)
