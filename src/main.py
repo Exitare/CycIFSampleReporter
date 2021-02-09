@@ -30,7 +30,7 @@ if uploaded_file is None:
 
 else:
     aand_file = data_loader.load_file(uploaded_file)
-    df, communities, Q, k = data_loader.extract_data(aand_file)
+    df, communities, Q, k, spatial_df = data_loader.extract_data(aand_file)
     pg_clusters = pd.Series(communities)
     biopsy_data = pd.Series(aand_file.obs['biopsy']).to_frame()
     means_df = data_loader.create_means_df(communities, pg_clusters, df)
@@ -46,10 +46,13 @@ else:
     st.write("Proportions of clusters:")
 
     st.subheader("Biopsy Comparison")
-    pre_index, post_index = data_loader.group_biopsy_data(biopsy_data)
-    data = data_loader.add_pre_column(df, pre_index, post_index)
-    melt = data_loader.melt_data_for_pre_post_bar(data)
-    st.pyplot(plots.create_bar_plot_pre_post(melt))
+    # pre_index, post_index = data_loader.group_biopsy_data(biopsy_data)
+    # data = data_loader.add_pre_column(df, pre_index, post_index)
+    # melt = data_loader.melt_data_for_pre_post_bar(data)
+    # st.pyplot(plots.create_bar_plot_pre_post(melt))
+
+    # df_with_communities = df.copy()
+    # df_with_communities['Community'] = communities
 
     st.subheader("Charts")
     col1, col2 = st.beta_columns(2)
@@ -65,6 +68,37 @@ else:
     selected_columns = st.multiselect('Select columns you want to display:',
                                       df.columns)
     st.plotly_chart(plots.create_violin_plot(df, selected_columns))
+
+    temp_means = means_df.copy()
+    temp_means['index'] = means_df.index
+    test_melt = pd.melt(temp_means, id_vars=['index'], var_name='marker')
+    test_melt.rename(columns={"index": "community"}, inplace=True)
+    mean_community_selector = st.slider(
+        'Select marker: ',
+        math.floor(test_melt["community"].min()),
+        math.ceil(test_melt["community"].max()), -1)
+
+    if mean_community_selector == -1:
+        g = sns.catplot(
+            data=test_melt, kind="bar",
+            x="marker", y="value", hue="community",
+            ci="sd", palette="dark", alpha=.6, height=6
+        )
+        g.despine(left=True)
+        g.set_axis_labels("", "Expression (Mean)")
+        g.set_xticklabels(rotation=90)
+        st.pyplot(g)
+    else:
+        temp = test_melt[test_melt['community'] == mean_community_selector]
+        g = sns.catplot(
+            data=temp, kind="bar",
+            x="marker", y="value", hue="community",
+            ci="sd", palette="dark", alpha=.6, height=6
+        )
+        g.despine(left=True)
+        g.set_axis_labels("", "Expression (Mean)")
+        g.set_xticklabels(rotation=90)
+        st.pyplot(g)
 
     high_low_marker_df = data_loader.create_high_low_marker_df(means_df)
 
