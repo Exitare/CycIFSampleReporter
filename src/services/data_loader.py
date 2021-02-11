@@ -15,9 +15,11 @@ def extract_data(aand_file):
     communities = communities.astype('object')
     Q = aand_file.uns['PhenoGraph_Q']
     k = aand_file.uns['PhenoGraph_k']
-    spatial_df = pd.DataFrame(columns=['X_centroid', 'Y_centroid'])
+    spatial_df = pd.DataFrame(columns=['X_centroid', 'Y_centroid', 'communities'])
     spatial_df['X_centroid'] = aand_file.obs['X_centroid']
     spatial_df['Y_centroid'] = aand_file.obs['Y_centroid']
+    spatial_df['communities'] = communities
+    # spatial_df['marker'] = df.iloc[spatial_df.index]
     return df, communities, Q, k, spatial_df
 
 

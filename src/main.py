@@ -57,6 +57,7 @@ else:
     st.subheader("Charts")
     col1, col2 = st.beta_columns(2)
     col1.header("Bar Chart")
+
     col1.bar_chart(communities.value_counts())
     col2.header("Area chart:")
     col2.area_chart(communities.value_counts())
@@ -99,6 +100,18 @@ else:
         g.set_axis_labels("", "Expression (Mean)")
         g.set_xticklabels(rotation=90)
         st.pyplot(g)
+
+    st.write(df)
+    st.write(communities)
+    spatial_df['communities'] = communities
+    st.write(spatial_df)
+
+    fig = px.scatter(
+        x=spatial_df["X_centroid"],
+        y=spatial_df["Y_centroid"],
+        color=spatial_df['communities']
+    )
+    st.write(fig)
 
     high_low_marker_df = data_loader.create_high_low_marker_df(means_df)
 
